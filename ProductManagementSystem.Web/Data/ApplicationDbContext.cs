@@ -9,5 +9,6 @@ namespace ProductManagementSystem.Web.Data
             : base(options)
         {
         }
+        public DbSet<ProductType> ProductTypes { get; set; }
     }
 }
