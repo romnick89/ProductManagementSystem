@@ -8,28 +8,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.Web.Data;
 using ProductManagementSystem.Web.Models.ProductTypes;
+using ProductManagementSystem.Web.Services;
 
 namespace ProductManagementSystem.Web.Controllers
 {
-    public class ProductTypesController : Controller
-    {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
+    public class ProductTypesController(IProductTypeService productTypeService) : Controller
+    {      
         private const string NameExistValidationMessage = "This Product Type already exist.";
-
-        public ProductTypesController(ApplicationDbContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
+        private readonly IProductTypeService _productTypeService = productTypeService;
 
         // GET: ProductTypes
         public async Task<IActionResult> Index()
         {
-            //Select * Product Types
-            var data = await _context.ProductTypes.ToListAsync();
-            //convert database data to view model
-            var viewData = _mapper.Map<List<ProductTypeReadOnlyVM>>(data);
+            var viewData = await _productTypeService.GetAllAsync();
             //return view model
             return View(viewData);
         }
@@ -42,16 +33,13 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var productType = await _context.ProductTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var productType = await _productTypeService.GetAsync<ProductTypeReadOnlyVM>(id.Value);
             if (productType == null)
             {
                 return NotFound();
             }
 
-            var viewData = _mapper.Map<ProductTypeReadOnlyVM>(productType);
-
-            return View(viewData);
+            return View(productType);
         }
 
         // GET: ProductTypes/Create
@@ -67,16 +55,14 @@ namespace ProductManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductTypeCreateVM productTypeCreateVM)
         {
-            if (await CheckIfProductNameExistsAsync(productTypeCreateVM.Name))
+            if (await _productTypeService.CheckIfProductNameExistsAsyncCreate(productTypeCreateVM.Name))
             {
                 ModelState.AddModelError(nameof(productTypeCreateVM.Name), NameExistValidationMessage);
             }
 
             if (ModelState.IsValid)
             {
-                var productType = _mapper.Map<ProductType>(productTypeCreateVM);
-                _context.Add(productType);
-                await _context.SaveChangesAsync();
+                await _productTypeService.CreateAsync(productTypeCreateVM);
                 return RedirectToAction(nameof(Index));
             }
             return View(productTypeCreateVM);
@@ -90,14 +76,12 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var productType = await _context.ProductTypes.FindAsync(id);
+            var productType = await _productTypeService.GetAsync<ProductTypeEditVM>(id.Value);
             if (productType == null)
             {
                 return NotFound();
             }
-            var viewData = _mapper.Map<ProductTypeEditVM>(productType);
-
-            return View(viewData);
+            return View(productType);
         }
 
         // POST: ProductTypes/Edit/5
@@ -112,7 +96,7 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            if (await CheckIfProductNameExistsAsyncEdit(productTypeEditVM))
+            if (await _productTypeService.CheckIfProductNameExistsAsyncEdit(productTypeEditVM))
             {
                 ModelState.AddModelError(nameof(productTypeEditVM.Name), NameExistValidationMessage);
             }
@@ -121,13 +105,11 @@ namespace ProductManagementSystem.Web.Controllers
             {               
                 try
                 {
-                    var data = _mapper.Map<ProductType>(productTypeEditVM);
-                    _context.Update(data);
-                    await _context.SaveChangesAsync();
+                    await _productTypeService.EditAsync(productTypeEditVM);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductTypeExists(productTypeEditVM.Id))
+                    if (!_productTypeService.ProductTypeExists(productTypeEditVM.Id))
                     {
                         return NotFound();
                     }
@@ -149,14 +131,12 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var productType = await _context.ProductTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var productType = await _productTypeService.GetAsync<ProductTypeReadOnlyVM>(id.Value);
             if (productType == null)
             {
                 return NotFound();
             }
-            var viewData = _mapper.Map<ProductTypeReadOnlyVM>(productType);
-            return View(viewData);
+            return View(productType);
         }
 
         // POST: ProductTypes/Delete/5
@@ -164,31 +144,8 @@ namespace ProductManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var productType = await _context.ProductTypes.FindAsync(id);
-            if (productType != null)
-            {
-                _context.ProductTypes.Remove(productType);
-            }
-
-            await _context.SaveChangesAsync();
+            await _productTypeService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProductTypeExists(int id)
-        {
-            return _context.ProductTypes.Any(e => e.Id == id);
-        }
-
-        //Check if product name already exist
-        private async Task<bool> CheckIfProductNameExistsAsync(string name)
-        {
-            return await _context.ProductTypes.AnyAsync(m => m.Name.ToLower() == name.ToLower());
-        }
-
-        private async Task<bool> CheckIfProductNameExistsAsyncEdit(ProductTypeEditVM productTypeEditVM)
-        {
-            return await _context.ProductTypes.AnyAsync(m => m.Name.ToLower() == productTypeEditVM.Name.ToLower()
-                && m.Id != productTypeEditVM.Id);
         }
     }
 }
