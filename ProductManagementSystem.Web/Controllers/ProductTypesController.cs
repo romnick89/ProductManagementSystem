@@ -12,6 +12,7 @@ using ProductManagementSystem.Web.Services;
 
 namespace ProductManagementSystem.Web.Controllers
 {
+    [Authorize(Roles = Roles.Administrator)]
     public class ProductTypesController(IProductTypeService productTypeService) : Controller
     {      
         private const string NameExistValidationMessage = "This Product Type already exist.";
