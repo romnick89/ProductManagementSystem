@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProductManagementSystem.Web.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -36,10 +36,10 @@ namespace ProductManagementSystem.Web.Data
                     }
                 );
 
-            var passwordHasher = new PasswordHasher<IdentityUser>();
-            builder.Entity<IdentityUser>().HasData
+            var passwordHasher = new PasswordHasher<ApplicationUser>();
+            builder.Entity<ApplicationUser>().HasData
                 (
-                    new IdentityUser
+                    new ApplicationUser
                     {
                         Id = "ffc16461-f454-4d61-af1b-86252f0a2703",
                         Email = "admin@localhost.com",
@@ -47,7 +47,10 @@ namespace ProductManagementSystem.Web.Data
                         NormalizedUserName = "ADMIN@LOCALHOST.COM",
                         UserName = "admin@localhost.com",
                         PasswordHash = passwordHasher.HashPassword(null, "P@ssword1"),
-                        EmailConfirmed = true
+                        EmailConfirmed = true,
+                        FirstName = "Default",
+                        LastName = "Admin",
+                        DateOfBirth = new DateOnly(1950,12,12)
                     }
                 );
 
