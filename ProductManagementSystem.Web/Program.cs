@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.Web.Data;
 using ProductManagementSystem.Web.Services;
+using ProductManagementSystem.Web.Services.Products;
+using ProductManagementSystem.Web.Services.ProductTypes;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //Allow injection for ProductType services to other classes
-builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
+builder.Services.AddScoped<IProductTypesService, ProductTypesService>();
+builder.Services.AddScoped<IProductsService, ProductsService>();
 
 //add auto-mapper service
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
