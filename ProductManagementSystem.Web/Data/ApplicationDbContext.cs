@@ -65,5 +65,6 @@ namespace ProductManagementSystem.Web.Data
         }
 
         public DbSet<ProductType> ProductTypes { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }

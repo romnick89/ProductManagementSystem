@@ -17,21 +17,27 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between nav nav-pills" id="pills-tab" role="tablist">
+                    <ul class="navbar-nav flex-grow-1 nav nav-pills" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        @if (User.IsInRole(Roles.Administrator))
+                        
+                        @if (User.IsInRole(Roles.Employee) || User.IsInRole(Roles.Supervisor) || User.IsInRole(Roles.Administrator))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="ProductTypes" asp-action="Index">Check Product Types</a>
                             </li>
-                        }                        
-                    </ul>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Products" asp-action="Index">Check All Products</a>
+                            </li>
+                        }
+                        
+                    </ul>               
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>

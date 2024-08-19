@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.Web.Data;
 using ProductManagementSystem.Web.Models.ProductTypes;
-using ProductManagementSystem.Web.Services;
+using ProductManagementSystem.Web.Services.ProductTypes;
 
 namespace ProductManagementSystem.Web.Controllers
 {
-    [Authorize(Roles = Roles.Administrator)]
-    public class ProductTypesController(IProductTypeService productTypeService) : Controller
+
+    public class ProductTypesController(IProductTypesService productTypeService) : Controller
     {      
         private const string NameExistValidationMessage = "This Product Type already exist.";
-        private readonly IProductTypeService _productTypeService = productTypeService;
+        private readonly IProductTypesService _productTypeService = productTypeService;
 
+        [Authorize(Roles = "Administrator, Supervisor, Employee")]
         // GET: ProductTypes
         public async Task<IActionResult> Index()
         {
@@ -43,6 +44,7 @@ namespace ProductManagementSystem.Web.Controllers
             return View(productType);
         }
 
+        [Authorize(Roles = Roles.Administrator)]
         // GET: ProductTypes/Create
         public IActionResult Create()
         {
@@ -67,8 +69,9 @@ namespace ProductManagementSystem.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(productTypeCreateVM);
-        }     
+        }
 
+        [Authorize(Roles = Roles.Administrator)]
         // GET: ProductTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -83,8 +86,7 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
             return View(productType);
-        }
-
+        }       
         // POST: ProductTypes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -124,6 +126,7 @@ namespace ProductManagementSystem.Web.Controllers
             return View(productTypeEditVM);
         }
 
+        [Authorize(Roles = Roles.Administrator)]
         // GET: ProductTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

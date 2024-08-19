@@ -2,15 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.Web.Data;
 using ProductManagementSystem.Web.Models.ProductTypes;
+using ProductManagementSystem.Web.Services.ProductTypes;
 
 namespace ProductManagementSystem.Web.Services
 {
-    public class ProductTypeService : IProductTypeService
+    public class ProductTypesService : IProductTypesService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public ProductTypeService(ApplicationDbContext context, IMapper mapper)
+        public ProductTypesService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -45,8 +46,8 @@ namespace ProductManagementSystem.Web.Services
 
         public async Task EditAsync(ProductTypeEditVM viewModel)
         {
-            var viewData = _mapper.Map<ProductType>(viewModel);
-            _context.Update(viewData);
+            var data = _mapper.Map<ProductType>(viewModel);
+            _context.Update(data);
             await _context.SaveChangesAsync();
         }
 

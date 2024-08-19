@@ -1,8 +1,8 @@
 ﻿using ProductManagementSystem.Web.Models.ProductTypes;
 
-namespace ProductManagementSystem.Web.Services
+namespace ProductManagementSystem.Web.Services.ProductTypes
 {
-    public interface IProductTypeService
+    public interface IProductTypesService
     {
         Task<bool> CheckIfProductNameExistsAsyncCreate(string name);
         Task<bool> CheckIfProductNameExistsAsyncEdit(ProductTypeEditVM productTypeEditVM);
