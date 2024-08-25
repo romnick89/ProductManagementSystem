@@ -26,7 +26,7 @@
             <br />
             <div class="form-group">
                 <label asp-for="ProductTypeId" class="control-label"></label>
-                <select asp-for="ProductTypeId" class="form-control" asp-items="Model.ProductTypes"></select>
+                <select asp-for="ProductTypeId" class="form-control" asp-items="@Model.ProductTypes"></select>
                 <span asp-validation-for="ProductTypeId" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
@@ -38,7 +38,7 @@
             </div>   
             <br />
             <div class="form-group">
-                <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
+                <a asp-action="DisplayByType" asp-route-id="@Model.ProductTypeId" class="btn btn-outline-primary">Back to List</a>
                 <input type="submit" value="Save" class="btn btn-outline-success" />
             </div>
         </form>

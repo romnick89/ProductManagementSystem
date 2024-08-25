@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.Web.Data;
+using ProductManagementSystem.Web.Models.Product;
 using ProductManagementSystem.Web.Models.ProductTypes;
 using ProductManagementSystem.Web.Services.ProductTypes;
 
