@@ -1,33 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProductManagementSystem.Web.Data;
 using ProductManagementSystem.Web.Models.Product;
+using ProductManagementSystem.Web.Models.ProductTypes;
+using ProductManagementSystem.Web.Services.Products;
+using ProductManagementSystem.Web.Services.ProductTypes;
 
 namespace ProductManagementSystem.Web.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
+        private const string NameExistValidationMessage = "This Product Name already exist.";
+        private readonly IProductsService _productsService;
+        private readonly IProductTypesService _productTypesService;
 
-        public ProductsController(ApplicationDbContext context, IMapper mapper)
+        public ProductsController(IProductsService productsService, IProductTypesService productTypesService)
         {
-            _context = context;
-            _mapper = mapper;
+            _productsService = productsService;
+            _productTypesService = productTypesService;
         }
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Products.Include(p => p.ProductType);
-            await applicationDbContext.ToListAsync();
-            var viewData = _mapper.Map<List<ProductReadOnlyVM>>(applicationDbContext);
+            var viewData = await _productsService.GetAllProductsAsync();
+            return View(viewData);
+        }
+
+        public async Task<IActionResult> DisplayByType(int id)
+        {
+            var viewData = await _productsService.GetAllProductsAsyncByType(id);           
             return View(viewData);
         }
 
@@ -39,12 +50,9 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .Include(p => p.ProductType)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            var viewData = _mapper.Map<ProductReadOnlyVM>(product);
-            if (product == null)
+            var viewData = await _productsService.GetProductAsync<ProductReadOnlyVM>(id.Value);
+            
+            if (viewData == null)
             {
                 return NotFound();
             }
@@ -53,11 +61,14 @@ namespace ProductManagementSystem.Web.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int id)
         {
+
+            var productTypesList = new SelectList(await _productTypesService.GetAllAsync(), "Id", "Name");
             var viewData = new ProductCreateVM
             {
-                ProductTypes = new SelectList(_context.ProductTypes, "Id", "Name")
+                ProductTypeId = id,
+                ProductTypes = productTypesList
             };
             
             return View(viewData);
@@ -70,15 +81,20 @@ namespace ProductManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductCreateVM productCreateVM)
         {
+            if (await _productsService.CheckIfProductNameExistsAsyncCreate(productCreateVM.Name))
+            {
+                ModelState.AddModelError(nameof(productCreateVM.Name), NameExistValidationMessage);
+            }
+
             if (ModelState.IsValid)
             {
-                var data = _mapper.Map<Product>(productCreateVM);
-                _context.Add(data);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await _productsService.CreateAsync(productCreateVM);
+
+                return RedirectToAction("DisplayByType", new { id = productCreateVM.ProductTypeId });
             }
+
+            productCreateVM.ProductTypes = new SelectList(await _productTypesService.GetAllAsync(), "Id", "Name", productCreateVM.ProductTypeId);
             
-            productCreateVM.ProductTypes = new SelectList(_context.ProductTypes, "Id", "Name", productCreateVM.ProductTypeId);
             return View(productCreateVM);
         }
 
@@ -90,18 +106,22 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productsService.GetProductAsync<ProductEditVM>(id.Value);
             if (product == null)
             {
                 return NotFound();
             }
+            var productTypes = await _productTypesService.GetAllAsync();
+            var productTypesList = new SelectList(productTypes, "Id", "Name");
+
             //create new view model
             var viewData = new ProductEditVM
             {
                 //add value accordingly from db
                 Name = product.Name,
                 Description = product.Description,
-                ProductTypes = new SelectList(_context.ProductTypes, "Id", "Name"),
+                ProductTypeId = product.ProductTypeId,
+                ProductTypes = productTypesList,
                 Quantity = product.Quantity
             };
             
@@ -119,19 +139,20 @@ namespace ProductManagementSystem.Web.Controllers
             {
                 return NotFound();
             }
+            if (await _productsService.CheckIfProductNameExistsAsyncEdit(productEditVM)) 
+            {
+                ModelState.AddModelError(nameof(productEditVM.Name), NameExistValidationMessage);
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var data = _mapper.Map<Product>(productEditVM);
-                    
-                    _context.Update(data);
-                    await _context.SaveChangesAsync();
+                    await _productsService.EditProductAsync(productEditVM);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(productEditVM.Id))
+                    if (!_productsService.ProductExists(productEditVM.Id))
                     {
                         return NotFound();
                     }
@@ -140,9 +161,10 @@ namespace ProductManagementSystem.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DisplayByType", new {id = productEditVM.ProductTypeId});
             }
-            productEditVM.ProductTypes = new SelectList(_context.ProductTypes, "Id", "Name", productEditVM.ProductTypeId);
+            productEditVM.ProductTypes = new SelectList(await _productTypesService.GetAllAsync(), "Id", "Name", productEditVM.ProductTypeId);
+            
             return View(productEditVM);
         }
 
@@ -154,18 +176,14 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .Include(p => p.ProductType)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            
-            var viewData = _mapper.Map<ProductReadOnlyVM>(product);
+            var product = await _productsService.GetProductAsync<ProductReadOnlyVM>(id.Value);
             
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(viewData);
+            return View(product);
         }
 
         // POST: Products/Delete/5
@@ -173,19 +191,11 @@ namespace ProductManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
+            var product = await _productsService.GetProductAsync<ProductEditVM>(id);
+            var productTypeId = product?.ProductTypeId;
+            
+            await _productsService.DeleteAsync(id);
+            return RedirectToAction("DisplayByType", new { id = productTypeId });
         }
     }
 }

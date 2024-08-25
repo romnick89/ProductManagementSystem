@@ -29,10 +29,10 @@
                         @if (User.IsInRole(Roles.Employee) || User.IsInRole(Roles.Supervisor) || User.IsInRole(Roles.Administrator))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="ProductTypes" asp-action="Index">Check Product Types</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="ProductTypes" asp-action="Index">Product Types</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Products" asp-action="Index">Check All Products</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Products" asp-action="Index">All Products</a>
                             </li>
                         }
                         

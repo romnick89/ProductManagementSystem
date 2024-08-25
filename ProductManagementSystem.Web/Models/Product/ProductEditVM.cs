@@ -7,7 +7,7 @@ namespace ProductManagementSystem.Web.Models.Product
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        //store productId on create
+        //store productId on edit
         public int ProductTypeId { get; set; }
         //store list of product types
         public SelectList? ProductTypes { get; set; }
