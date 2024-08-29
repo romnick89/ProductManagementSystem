@@ -2,15 +2,22 @@
 
 namespace ProductManagementSystem.Web.Models.Product
 {
-    public class ProductEditVM : IValidatableObject
+    public class ProductEditVM : BaseProductVM, IValidatableObject
     {
-        public int Id { get; set; }
+        [Required]
+        [StringLength(50, ErrorMessage = "Exceeded maximum character allowed")]
+        [Display(Name = "Product Name")]
         public string Name { get; set; }
+        [Required]
+        [StringLength(50, ErrorMessage = "Exceeded maximum character allowed")]
+        [Display(Name = "Product Description")]
         public string Description { get; set; }
         //store productId on edit
+        [Display(Name = "Product Type")]
         public int ProductTypeId { get; set; }
         //store list of product types
         public SelectList? ProductTypes { get; set; }
+        [Display(Name = "Quantity in Stock")]
         public int Quantity { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

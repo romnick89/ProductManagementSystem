@@ -4,11 +4,15 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Select Product Types</h1>
+<br />
+@if (User.IsInRole(Roles.Administrator))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-outline-primary">+Add New Product Type</a>
+    </p>
+}
 
-<p>
-    <a asp-action="Create" class="btn btn-outline-primary">+Add New Product Type</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -31,9 +35,12 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a> |
+                @if (User.IsInRole(Roles.Administrator))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
+                }                    
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>                 
                 <a asp-controller="Products" asp-action="DisplayByType" asp-route-id="@item.Id" class="btn btn-outline-success">View Products</a>
             </td>
         </tr>

@@ -33,7 +33,7 @@ namespace ProductManagementSystem.Web.Services.Products
 
         public async Task<List<ProductReadOnlyVM>> GetAllProductsAsync()
         {
-            var products = _context.Products.Include(p => p.ProductType).OrderBy(x => x.ProductType);
+            var products = _context.Products.Include(p => p.ProductType).OrderBy(x => x.ProductType).ThenBy(m => m.Name);
             await products.ToListAsync();
             var viewData = _mapper.Map<List<ProductReadOnlyVM>>(products);
             return viewData;
