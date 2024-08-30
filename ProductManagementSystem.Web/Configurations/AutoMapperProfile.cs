@@ -18,6 +18,7 @@ namespace ProductManagementSystem.Web.Configurations
             CreateMap<Product, ProductReadOnlyVM>();
             CreateMap<ProductCreateVM, Product>();
             CreateMap<ProductEditVM, Product>().ReverseMap();
+            CreateMap<Product, ProductForOrderOnlyVM>();
         }
     }
 }

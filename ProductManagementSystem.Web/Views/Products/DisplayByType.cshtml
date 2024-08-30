@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ProductReadOnlyVM>
+﻿@model IEnumerable<ProductForOrderOnlyVM>
 
 @{
     ViewData["Title"] = "DisplayByType";
@@ -42,6 +42,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AmountToBeOrdered)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -62,7 +65,10 @@
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a>
+                    <input asp-for="@item.AmountToBeOrdered" class="form-control" min="0" />
+                </td>
+                <td>
+                    @* <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Details</a> *@
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Edit</a>                
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Delete</a>
                 </td>
@@ -72,4 +78,5 @@
 </table>
 <p>
     <a asp-controller="ProductTypes" asp-action="Index" class="btn btn-outline-warning">Return to Product Types</a>
+    <a asp-controller="" asp-action="" class="btn btn-outline-success float-end">Add All Selected to Orders</a>
 </p>
