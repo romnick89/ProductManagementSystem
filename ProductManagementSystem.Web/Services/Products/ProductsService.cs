@@ -39,11 +39,11 @@ namespace ProductManagementSystem.Web.Services.Products
             return viewData;
         }
 
-        public async Task<List<ProductReadOnlyVM>> GetAllProductsAsyncByType(int id)
+        public async Task<List<ProductForOrderOnlyVM>> GetAllProductsAsyncByType(int id)
         {
             var products = _context.Products.Include(p => p.ProductType).Where(q => q.ProductTypeId == id).OrderBy(x => x.Name);
             await products.ToListAsync();
-            var viewData = _mapper.Map<List<ProductReadOnlyVM>>(products);
+            var viewData = _mapper.Map<List<ProductForOrderOnlyVM>>(products);
             return viewData;
         }
 

@@ -14,6 +14,6 @@ namespace ProductManagementSystem.Web.Services.Products
         bool ProductExists(int id);
         Task<bool> CheckIfProductNameExistsAsyncCreate(string name);
         Task<bool> CheckIfProductNameExistsAsyncEdit(ProductEditVM productEditVM);
-        Task<List<ProductReadOnlyVM>> GetAllProductsAsyncByType(int id);
+        Task<List<ProductForOrderOnlyVM>> GetAllProductsAsyncByType(int id);
     }
 }
