@@ -122,7 +122,8 @@ namespace ProductManagementSystem.Web.Controllers
                 Description = product.Description,
                 ProductTypeId = product.ProductTypeId,
                 ProductTypes = productTypesList,
-                Quantity = product.Quantity
+                Quantity = product.Quantity,
+                AmountToBeOrdered = product.AmountToBeOrdered
             };
             
             return View(viewData);

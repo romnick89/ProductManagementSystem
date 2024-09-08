@@ -19,6 +19,8 @@ namespace ProductManagementSystem.Web.Models.Product
         public SelectList? ProductTypes { get; set; }
         [Display(Name = "Quantity in Stock")]
         public int Quantity { get; set; }
+        [Display(Name = "Amount to be Ordered")]
+        public int AmountToBeOrdered { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
