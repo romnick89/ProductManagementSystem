@@ -1,35 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ProductManagementSystem.Web.Data;
 using ProductManagementSystem.Web.Models.OrderList;
-using ProductManagementSystem.Web.Models.Product;
+using ProductManagementSystem.Web.Services.OrderLists;
+
 
 namespace ProductManagementSystem.Web.Controllers
 {
     public class OrderListController : Controller
     {
         private const string ProductInListValidationMessage = "This Product is already on the order list.";
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly IOrderListsService _orderListsService;
 
-        public OrderListController(ApplicationDbContext context, IMapper mapper)
+        public OrderListController(IOrderListsService orderListsService)
         {
-            _context = context;
-            _mapper = mapper;
+            _orderListsService = orderListsService;
         }
 
         // GET: OrderList
         public async Task<IActionResult> Index()
         {
-            var data = await _context.OrderList.Include(o => o.Product).ThenInclude(x => x.ProductType).OrderBy(s => s.Product.ProductType).ToListAsync();           
-            var viewData = _mapper.Map<List<OrderListReadOnlyVM>>(data);
+            var viewData = await _orderListsService.GetAllOrdersList();
             return View(viewData);
         }
 
@@ -51,11 +41,12 @@ namespace ProductManagementSystem.Web.Controllers
 
             return View(orderList);
         }*/
+
         //POST: OrderList/AddToOrder
         public async Task<IActionResult> AddToOrder(int id)
         {
             
-            if (await CheckIfProductAlredyInOrderList(id))
+            if (await _orderListsService.CheckIfProductAlredyInOrderList(id))
             {
                 ModelState.AddModelError(nameof(id.ToString), ProductInListValidationMessage);
                 return RedirectToAction(nameof(Index));
@@ -65,15 +56,13 @@ namespace ProductManagementSystem.Web.Controllers
             {
                 ProductId = id                              
             };
-
-            var data = _mapper.Map<OrderList>(viewData);
+            
             if (ModelState.IsValid)
             {               
-                _context.Add(data);
-                await _context.SaveChangesAsync();
+                await _orderListsService.AddToOrderList(viewData);
                 return RedirectToAction(nameof(Index));
             }
-            return View(data);
+            return View(viewData);
 
         }
 
@@ -102,7 +91,7 @@ namespace ProductManagementSystem.Web.Controllers
         }*/
 
         // GET: OrderList/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        /*public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -116,12 +105,12 @@ namespace ProductManagementSystem.Web.Controllers
             }
             ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Name", orderList.ProductId);
             return View(orderList);
-        }
+        }*/
 
         // POST: OrderList/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        /*[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name")] OrderList orderList)
         {
@@ -150,9 +139,9 @@ namespace ProductManagementSystem.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Id", orderList.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Name", orderList.ProductId);
             return View(orderList);
-        }
+        }*/
 
         // GET: OrderList/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -162,14 +151,7 @@ namespace ProductManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            var orderList = await _context.OrderList
-                .Include(o => o.Product)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderList == null)
-            {
-                return NotFound();
-            }
-            var viewData = _mapper.Map<OrderListReadOnlyVM>(orderList);
+            var viewData = await _orderListsService.GetOrderListAsync<OrderListReadOnlyVM>(id.Value);
             return View(viewData);
         }
 
@@ -178,24 +160,8 @@ namespace ProductManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var orderList = await _context.OrderList.FindAsync(id);
-            if (orderList != null)
-            {
-                _context.OrderList.Remove(orderList);
-            }
-
-            await _context.SaveChangesAsync();
+            await _orderListsService.RemoveFromOrderList(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool OrderListExists(int id)
-        {
-            return _context.OrderList.Any(e => e.Id == id);
-        }
-
-        public async Task<bool> CheckIfProductAlredyInOrderList(int id)
-        {
-            return await _context.OrderList.AnyAsync(x => x.ProductId == id);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using ProductManagementSystem.Web.Models.Product;
-using ProductManagementSystem.Web.Models.ProductTypes;
+﻿using ProductManagementSystem.Web.Models.Product;
 
 namespace ProductManagementSystem.Web.Services.Products
 {
