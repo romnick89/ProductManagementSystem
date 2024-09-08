@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.CodeAnalysis.Differencing;
 using ProductManagementSystem.Web.Data;
+using ProductManagementSystem.Web.Models.OrderList;
 using ProductManagementSystem.Web.Models.Product;
 using ProductManagementSystem.Web.Models.ProductTypes;
 
@@ -19,6 +20,8 @@ namespace ProductManagementSystem.Web.Configurations
             CreateMap<ProductCreateVM, Product>();
             CreateMap<ProductEditVM, Product>().ReverseMap();
             CreateMap<Product, ProductForOrderOnlyVM>();
+            CreateMap<OrderList, OrderListAddToOrderVM>().ReverseMap();
+            CreateMap<OrderList, OrderListReadOnlyVM>().ReverseMap();
         }
     }
 }

@@ -38,6 +38,12 @@
             </div>   
             <br />
             <div class="form-group">
+                <label asp-for="AmountToBeOrdered" class="control-label"></label>
+                <input asp-for="AmountToBeOrdered" class="form-control" min="0" />
+                <span asp-validation-for="AmountToBeOrdered" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
                 <a asp-action="DisplayByType" asp-route-id="@Model.ProductTypeId" class="btn btn-outline-primary">Back to List</a>
                 <input type="submit" value="Save" class="btn btn-outline-success" />
             </div>
