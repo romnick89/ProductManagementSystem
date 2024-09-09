@@ -23,25 +23,6 @@ namespace ProductManagementSystem.Web.Controllers
             return View(viewData);
         }
 
-        /*// GET: OrderList/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var orderList = await _context.OrderList
-                .Include(o => o.Product)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderList == null)
-            {
-                return NotFound();
-            }
-
-            return View(orderList);
-        }*/
-
         //POST: OrderList/AddToOrder
         public async Task<IActionResult> AddToOrder(int id)
         {
@@ -65,30 +46,6 @@ namespace ProductManagementSystem.Web.Controllers
             return View(viewData);
 
         }
-
-        /*// GET: OrderList/Create
-        public IActionResult Create()
-        {
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Name");
-            return View();
-        }
-
-        // POST: OrderList/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,Id")] OrderList orderList)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(orderList);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Name", orderList.ProductId);
-            return View(orderList);
-        }*/
 
         // GET: OrderList/Edit/5
         /*public async Task<IActionResult> Edit(int? id)
@@ -161,6 +118,12 @@ namespace ProductManagementSystem.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _orderListsService.RemoveFromOrderList(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> RemoveAll()
+        {
+            await _orderListsService.RemoveAllFromOrderList();
             return RedirectToAction(nameof(Index));
         }
     }

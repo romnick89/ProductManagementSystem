@@ -59,5 +59,16 @@ namespace ProductManagementSystem.Web.Services.OrderLists
         {
             return await _context.OrderList.AnyAsync(x => x.ProductId == id);
         }
+
+        public async Task RemoveAllFromOrderList()
+        {
+            var orderList = await _context.OrderList.Include(o => o.Product)               
+                .ToListAsync();
+            foreach (var order in orderList) 
+            {
+                _context.Remove(order);
+            }
+            await _context.SaveChangesAsync();
+        }
     }
 }
