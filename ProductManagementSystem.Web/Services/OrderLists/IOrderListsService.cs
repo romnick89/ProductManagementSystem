@@ -10,5 +10,6 @@ namespace ProductManagementSystem.Web.Services.OrderLists
         Task <T?> GetOrderListAsync<T>(int id) where T : class;
         bool OrderListExists(int id);
         Task RemoveFromOrderList(int id);
+        Task RemoveAllFromOrderList();
     }
 }
