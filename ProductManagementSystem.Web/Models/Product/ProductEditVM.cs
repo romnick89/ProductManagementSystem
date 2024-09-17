@@ -21,6 +21,8 @@ namespace ProductManagementSystem.Web.Models.Product
         public int Quantity { get; set; }
         [Display(Name = "Amount to be Ordered")]
         public int AmountToBeOrdered { get; set; }
+        [Display(Name = "Select to Add in the Order List")]
+        public bool IsSelected { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

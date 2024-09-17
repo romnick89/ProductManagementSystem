@@ -16,5 +16,6 @@ namespace ProductManagementSystem.Web.Data
         public int ProductTypeId { get; set; }
 
         public int AmountToBeOrdered { get; set; }
+        public bool IsSelected { get; set; }
     }
 }
