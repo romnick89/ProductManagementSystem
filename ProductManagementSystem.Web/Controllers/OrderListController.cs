@@ -8,7 +8,7 @@ namespace ProductManagementSystem.Web.Controllers
 {
     public class OrderListController : Controller
     {
-        private const string ProductInListValidationMessage = "This Product is already on the order list.";
+        private const string ProductInListValidationMessage = "The product you tried to add is already on the order list.";
         private readonly IOrderListsService _orderListsService;
 
         public OrderListController(IOrderListsService orderListsService)
@@ -23,21 +23,21 @@ namespace ProductManagementSystem.Web.Controllers
             return View(viewData);
         }
 
-        //POST: OrderList/AddToOrder
+        
         public async Task<IActionResult> AddToOrder(int id)
         {
-            
             if (await _orderListsService.CheckIfProductAlredyInOrderList(id))
-            {
-                ModelState.AddModelError(nameof(id.ToString), ProductInListValidationMessage);
+            {                
+                TempData["info"] = ProductInListValidationMessage; 
+                
                 return RedirectToAction(nameof(Index));
             }
 
             var viewData = new OrderListAddToOrderVM 
-            {
-                ProductId = id                              
-            };
-            
+            {                                
+                ProductId = id
+            };            
+
             if (ModelState.IsValid)
             {               
                 await _orderListsService.AddToOrderList(viewData);

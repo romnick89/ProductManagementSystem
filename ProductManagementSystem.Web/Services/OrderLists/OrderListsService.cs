@@ -12,7 +12,6 @@ namespace ProductManagementSystem.Web.Services.OrderLists
         public async Task AddToOrderList(OrderListAddToOrderVM orderListAddToOrderVM)
         {
             var data = _mapper.Map<OrderList>(orderListAddToOrderVM);
-            
             await _context.AddAsync(data);
             await _context.SaveChangesAsync();
         }

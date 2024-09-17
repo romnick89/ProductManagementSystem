@@ -13,13 +13,13 @@ namespace ProductManagementSystem.Web.Configurations
         {
             //map data to view || view to data models
             //direction is important || use reverse map to map both direction
-            CreateMap<ProductType, ProductTypeReadOnlyVM>();
+            CreateMap<ProductType, ProductTypeReadOnlyVM>().ReverseMap();
             CreateMap<ProductTypeCreateVM, ProductType>();
             CreateMap<ProductTypeEditVM, ProductType>().ReverseMap();
             CreateMap<Product, ProductReadOnlyVM>();
             CreateMap<ProductCreateVM, Product>();
             CreateMap<ProductEditVM, Product>().ReverseMap();
-            CreateMap<Product, ProductForOrderOnlyVM>();
+            CreateMap<Product, ProductForOrderOnlyVM>().ReverseMap();
             CreateMap<OrderListAddToOrderVM, OrderList>();
             CreateMap<OrderList, OrderListReadOnlyVM>();
         }

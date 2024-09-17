@@ -2,13 +2,21 @@
 
 @{
     ViewData["Title"] = "Index";
+    string info = TempData["info"]?.ToString()??"";
+}
+
+@if (!string.IsNullOrEmpty(info))
+{
+    <div class="alert alert-danger d-flex align-items-center">
+        <div class="container-fluid">
+            @info
+        </div>        
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
 <h1>Index</h1>
 
-<p>
-    @* <a asp-action="Create">Create New</a> *@
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -43,9 +51,8 @@
                     @Html.DisplayFor(modelItem => item.Product.AmountToBeOrdered)
             </td>
             <td>
-                @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> | *@
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Remove</a>
+                @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | *@
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Remove item</a>
             </td>
         </tr>
 }
@@ -54,6 +61,7 @@
 <p>
     <a asp-controller="ProductTypes" asp-action="Index" class="btn btn-outline-warning">Return to Product Types</a>
     <form asp-action="RemoveAll">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="submit" value="Remove All" class="btn btn-outline-danger float-end" />
     </form>
     

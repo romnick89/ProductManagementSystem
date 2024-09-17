@@ -7,6 +7,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProductManagementSystem.Web.Data;
@@ -35,12 +37,31 @@ namespace ProductManagementSystem.Web.Controllers
             var viewData = await _productsService.GetAllProductsAsync();
             return View(viewData);
         }
-
+        //Get: products by type
         public async Task<IActionResult> DisplayByType(int id)
         {
-            var viewData = await _productsService.GetAllProductsAsyncByType(id);           
-            return View(viewData);
-        }
+            var products = await _productsService.GetAllProductsAsyncByType(id);
+            //add productId in TempData
+            TempData["productId"] = id.ToString();
+            
+            var list = new List<ProductForOrderOnlyVM>();
+            foreach(var product in products)
+            {
+                var prod = new ProductForOrderOnlyVM
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    ProductType = product.ProductType,
+                    Quantity = product.Quantity,
+                    AmountToBeOrdered = product.AmountToBeOrdered,
+                    IsSelected = product.IsSelected,
+                };
+                list.Add(prod);
+            }
+
+            return View(list);
+        }       
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -69,8 +90,8 @@ namespace ProductManagementSystem.Web.Controllers
             {
                 ProductTypeId = id,
                 ProductTypes = productTypesList
-            };
-            
+            };           
+
             return View(viewData);
         }
 
@@ -123,7 +144,8 @@ namespace ProductManagementSystem.Web.Controllers
                 ProductTypeId = product.ProductTypeId,
                 ProductTypes = productTypesList,
                 Quantity = product.Quantity,
-                AmountToBeOrdered = product.AmountToBeOrdered
+                AmountToBeOrdered = product.AmountToBeOrdered,
+                IsSelected = product.IsSelected
             };
             
             return View(viewData);
