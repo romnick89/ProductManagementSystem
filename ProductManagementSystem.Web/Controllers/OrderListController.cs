@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ProductManagementSystem.Web.Models.OrderList;
 using ProductManagementSystem.Web.Services.OrderLists;
 
@@ -8,7 +9,7 @@ namespace ProductManagementSystem.Web.Controllers
 {
     public class OrderListController : Controller
     {
-        private const string ProductInListValidationMessage = "The product you tried to add is already on the order list.";
+        private const string ProductInListValidationMessage = "The product or products you tried to add is already on the order list.";
         private readonly IOrderListsService _orderListsService;
 
         public OrderListController(IOrderListsService orderListsService)
@@ -23,7 +24,19 @@ namespace ProductManagementSystem.Web.Controllers
             return View(viewData);
         }
 
-        
+        public async Task<IActionResult> AddAllToOrder(int id)
+        {
+            var orderList = await _orderListsService.GetAllOrdersList();           
+
+            if (ModelState.IsValid)
+            {               
+                await _orderListsService.AddAllToOrderList(id);
+                return RedirectToAction(nameof(Index));                
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> AddToOrder(int id)
         {
             if (await _orderListsService.CheckIfProductAlredyInOrderList(id))
@@ -44,7 +57,6 @@ namespace ProductManagementSystem.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(viewData);
-
         }
 
         // GET: OrderList/Edit/5

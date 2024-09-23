@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.Web.Models.OrderList;
+using ProductManagementSystem.Web.Services.Products;
 
 namespace ProductManagementSystem.Web.Services.OrderLists
 {
@@ -68,6 +69,29 @@ namespace ProductManagementSystem.Web.Services.OrderLists
                 _context.Remove(order);
             }
             await _context.SaveChangesAsync();
+        }
+
+        public async Task AddAllToOrderList(int id)
+        {
+            var products = _context.Products.Include(p => p.ProductType).Where(q => q.ProductTypeId == id).OrderBy(x => x.Name);
+            await products.ToListAsync();
+
+            var orderList = await _context.OrderList.Include(o => o.Product)
+                .ThenInclude(x => x.ProductType).OrderBy(s => s.Product.ProductType)
+                .ToListAsync();
+
+            foreach (var product in products)
+            {
+                if (product.IsSelected.Equals(true) && !await CheckIfProductAlredyInOrderList(product.Id))
+                {
+                    var data = new OrderListAddToOrderVM
+                    {                        
+                        ProductId = product.Id
+                    };
+                    await AddToOrderList(data);
+                }
+                
+            }
         }
     }
 }
