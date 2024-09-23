@@ -11,5 +11,6 @@ namespace ProductManagementSystem.Web.Services.OrderLists
         bool OrderListExists(int id);
         Task RemoveFromOrderList(int id);
         Task RemoveAllFromOrderList();
+        Task AddAllToOrderList(int id);
     }
 }
