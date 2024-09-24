@@ -13,6 +13,18 @@ namespace ProductManagementSystem.Web.Services.OrderLists
         public async Task AddToOrderList(OrderListAddToOrderVM orderListAddToOrderVM)
         {
             var data = _mapper.Map<OrderList>(orderListAddToOrderVM);
+
+            var product = await _context.Products
+                .Include(p => p.ProductType)
+                .FirstOrDefaultAsync(m => m.Id == data.ProductId);
+            if (product != null)
+            {
+                product.IsSelected = true;
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+
+            }
+
             await _context.AddAsync(data);
             await _context.SaveChangesAsync();
         }
@@ -41,10 +53,22 @@ namespace ProductManagementSystem.Web.Services.OrderLists
 
         public async Task RemoveFromOrderList(int id)
         {
-            var orderList = await _context.OrderList.FindAsync(id);
-            if (orderList != null)
+            var orderListItem = await _context.OrderList.FindAsync(id);
+            
+
+            if (orderListItem != null)
             {
-                _context.OrderList.Remove(orderList);
+                var product = await _context.Products
+                .Include(p => p.ProductType)
+                .FirstOrDefaultAsync(m => m.Id == orderListItem.ProductId);
+                if (product != null) 
+                {
+                    product.IsSelected = false;
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+
+                }
+                _context.OrderList.Remove(orderListItem);
             }
 
             await _context.SaveChangesAsync();
@@ -66,6 +90,15 @@ namespace ProductManagementSystem.Web.Services.OrderLists
                 .ToListAsync();
             foreach (var order in orderList) 
             {
+                var product = await _context.Products
+                .Include(p => p.ProductType)
+                .FirstOrDefaultAsync(m => m.Id == order.ProductId);
+                if (product != null) 
+                {
+                    product.IsSelected = false;
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                }
                 _context.Remove(order);
             }
             await _context.SaveChangesAsync();
@@ -75,10 +108,6 @@ namespace ProductManagementSystem.Web.Services.OrderLists
         {
             var products = _context.Products.Include(p => p.ProductType).Where(q => q.ProductTypeId == id).OrderBy(x => x.Name);
             await products.ToListAsync();
-
-            var orderList = await _context.OrderList.Include(o => o.Product)
-                .ThenInclude(x => x.ProductType).OrderBy(s => s.Product.ProductType)
-                .ToListAsync();
 
             foreach (var product in products)
             {

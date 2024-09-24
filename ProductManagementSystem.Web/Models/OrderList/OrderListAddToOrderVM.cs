@@ -6,7 +6,6 @@ namespace ProductManagementSystem.Web.Models.OrderList
     {
         public int Id { get; set; }
         
-        //public ProductForOrderOnlyVM? ProductForOrderOnlyVM { get; set; }
         public int ProductId { get; set; }
     }
 }
