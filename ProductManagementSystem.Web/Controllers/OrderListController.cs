@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProductManagementSystem.Web.Models.OrderList;
+using ProductManagementSystem.Web.Models.Product;
 using ProductManagementSystem.Web.Services.OrderLists;
 
 
@@ -128,8 +129,9 @@ namespace ProductManagementSystem.Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        {                      
             await _orderListsService.RemoveFromOrderList(id);
+                     
             return RedirectToAction(nameof(Index));
         }
 
