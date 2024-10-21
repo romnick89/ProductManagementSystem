@@ -88,14 +88,5 @@ namespace ProductManagementSystem.Web.Services.Products
         {
             return await _context.Products.AnyAsync(e => e.Name.ToLower() == productEditVM.Name.ToLower() && e.Id != productEditVM.Id);
         }
-
-
-        public async Task UpdateAsync(ProductForOrderOnlyVM entity)
-        {
-            var product = _mapper.Map<Product>(entity);
-            
-            _context.Update(product);
-            await _context.SaveChangesAsync();            
-        }
     }
 }

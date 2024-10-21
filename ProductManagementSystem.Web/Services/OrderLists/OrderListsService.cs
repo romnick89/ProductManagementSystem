@@ -17,6 +17,7 @@ namespace ProductManagementSystem.Web.Services.OrderLists
             var product = await _context.Products
                 .Include(p => p.ProductType)
                 .FirstOrDefaultAsync(m => m.Id == data.ProductId);
+
             if (product != null)
             {
                 product.IsSelected = true;
@@ -61,6 +62,7 @@ namespace ProductManagementSystem.Web.Services.OrderLists
                 var product = await _context.Products
                 .Include(p => p.ProductType)
                 .FirstOrDefaultAsync(m => m.Id == orderListItem.ProductId);
+
                 if (product != null) 
                 {
                     product.IsSelected = false;
@@ -93,6 +95,7 @@ namespace ProductManagementSystem.Web.Services.OrderLists
                 var product = await _context.Products
                 .Include(p => p.ProductType)
                 .FirstOrDefaultAsync(m => m.Id == order.ProductId);
+
                 if (product != null) 
                 {
                     product.IsSelected = false;
