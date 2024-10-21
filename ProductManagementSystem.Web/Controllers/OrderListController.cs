@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProductManagementSystem.Web.Models.OrderList;
 using ProductManagementSystem.Web.Models.Product;
 using ProductManagementSystem.Web.Services.OrderLists;
+using SelectPdf;
 
 
 namespace ProductManagementSystem.Web.Controllers
@@ -22,7 +23,25 @@ namespace ProductManagementSystem.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var viewData = await _orderListsService.GetAllOrdersList();
+
             return View(viewData);
+        }
+
+        public IActionResult GeneratePDF(string html)
+        {
+            HtmlToPdf converter = new HtmlToPdf();
+
+            html = html.Replace("start", "<").Replace("end", ">");
+
+            PdfDocument doc = converter.ConvertHtmlString(html);
+
+            //doc.Save($@"{AppDomain.CurrentDomain.BaseDirectory}\url.pdf");
+
+            byte[] pdfFile = doc.Save();
+
+            doc.Close();
+
+            return File(pdfFile, "application/pdf");
         }
 
         public async Task<IActionResult> AddAllToOrder(int id)

@@ -14,55 +14,65 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+<div id="divPDFBody">
+    <h1>Orders</h1>
 
-<h1>Index</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Product.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product.ProductType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product.AmountToBeOrdered)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                    @Html.DisplayFor(modelItem => item.Product.Name)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.Product.Description)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.Product.ProductType.Name)
-            </td>
-            <td>x
-                    @Html.DisplayFor(modelItem => item.Product.AmountToBeOrdered)
-            </td>
-            <td>
-                @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | *@
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Remove item</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product.ProductType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product.AmountToBeOrdered)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Product.Name)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Product.Description)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Product.ProductType.Name)
+                </td>
+                <td>x
+                        @Html.DisplayFor(modelItem => item.Product.AmountToBeOrdered)
+                </td>
+                <td>
+                    @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | *@
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Remove item</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
 <p>
     <a asp-controller="ProductTypes" asp-action="Index" class="btn btn-outline-warning">Return to Product Types</a>
+    <button class="btn btn-outline-primary" id="btnGeneratePDF">Generate PDF</button>
     <form asp-action="RemoveAll">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="submit" value="Remove All" class="btn btn-outline-danger float-end" />
     </form>
-    
 </p>
+
+<script type="text/javascript">
+    $("#btnGeneratePDF").click(function () {
+        var html = $("#divPDFBody").html();
+        html = html.replace(/</g, "start").replace(/>/g, "end");
+
+        window.open("/OrderList/GeneratePDF?html="+html,"_blank");
+    });
+</script>
