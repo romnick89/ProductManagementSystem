@@ -116,13 +116,17 @@ namespace ProductManagementSystem.Web.Services.OrderLists
             {
                 if (product.IsSelected.Equals(true) && !await CheckIfProductAlredyInOrderList(product.Id))
                 {
-                    var data = new OrderListAddToOrderVM
+                    var selectedData = new OrderListAddToOrderVM
                     {                        
                         ProductId = product.Id
                     };
-                    await AddToOrderList(data);
+                    await AddToOrderList(selectedData);
                 }
-                
+
+                if (product.IsSelected.Equals(false))
+                {
+                    await RemoveFromOrderList(product.Id);
+                }
             }
         }
     }

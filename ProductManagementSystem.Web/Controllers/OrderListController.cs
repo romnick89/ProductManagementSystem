@@ -31,7 +31,7 @@ namespace ProductManagementSystem.Web.Controllers
         {
             HtmlToPdf converter = new HtmlToPdf();
 
-            html = html.Replace("start", "<").Replace("end", ">");
+            html = html.Replace("start", "<").Replace("Remove item", "").Replace("end", ">");
 
             PdfDocument doc = converter.ConvertHtmlString(html);
 
